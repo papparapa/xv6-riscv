@@ -5,11 +5,13 @@ ENTRY( _main )
 SECTIONS
 {
  . = 0x0;
- 
+
+  . = ALIGN(0x1000);
   .text : {
     *(.text .text.*)
   }
 
+  . = ALIGN(0x1000);
   .rodata : {
     . = ALIGN(16);
     *(.srodata .srodata.*) /* do not need to distinguish this from .rodata */
@@ -18,6 +20,7 @@ SECTIONS
     . = ALIGN(0x1000);
   }
 
+  . = ALIGN(0x1000);
   .data : {
     . = ALIGN(16);
     *(.sdata .sdata.*) /* do not need to distinguish this from .data */
@@ -25,6 +28,7 @@ SECTIONS
     *(.data .data.*)
   }
 
+  . = ALIGN(0x1000);
   .bss : {
     . = ALIGN(16);
     *(.sbss .sbss.*) /* do not need to distinguish this from .bss */
