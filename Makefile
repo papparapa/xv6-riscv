@@ -41,7 +41,7 @@ LD = ld.lld
 OBJCOPY = llvm-objcopy
 OBJDUMP = llvm-objdump
 
-CFLAGS = -Wall -Werror -O -fno-omit-frame-pointer -ggdb -gdwarf-2 -g3
+CFLAGS = -Wall -Werror -O2 -fno-omit-frame-pointer
 CFLAGS += -MD
 CFLAGS += -mcmodel=medany
 CFLAGS += -ffreestanding -fno-common -nostdlib -mno-relax
@@ -58,9 +58,15 @@ endif
 
 LDFLAGS = -z max-page-size=4096
 
+$(patsubst %.c,%.o,$(wildcard $K/*.c)): $K/%.o: $K/%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -ggdb3 -g3 -c -o $@ $<
+
+$(patsubst %.S,%.o,$(wildcard $K/*.S)): $K/%.o: $K/%.S
+	$(CC) $(CPPFLAGS) $(CFLAGS) -ggdb3 -g3 -c -o $@ $<
+
 $K/kernel: $(OBJS) $K/kernel.ld $U/initcode
 	$(LD) $(LDFLAGS) -T $K/kernel.ld -o $K/kernel $(OBJS)
-	$(OBJDUMP) -S $K/kernel > $K/kernel.asm
+	$(OBJDUMP) -S -l $K/kernel > $K/kernel.asm
 	$(OBJDUMP) -t $K/kernel | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $K/kernel.sym
 
 $U/initcode: $U/initcode.S
